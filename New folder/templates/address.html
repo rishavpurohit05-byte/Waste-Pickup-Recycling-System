@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Manage Addresses</h2>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Add New Address</div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-2">
+                        <label>Address Line</label>
+                        <input type="text" name="address_line" class="form-control" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label>City</label>
+                            <input type="text" name="city" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label>State</label>
+                            <input type="text" name="state" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label>Pincode</label>
+                            <input type="text" name="pincode" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label>Area</label>
+                            <input type="text" name="area" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label>Landmark (optional)</label>
+                        <input type="text" name="landmark" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">Your Addresses</div>
+            <div class="card-body">
+                {% if addresses %}
+                    {% for addr in addresses %}
+                        <div class="border rounded p-2 mb-2">
+                            <strong>{{ addr.address_line }}</strong><br>
+                            {{ addr.area }}, {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}<br>
+                            {% if addr.landmark %}Landmark: {{ addr.landmark }}<br>{% endif %}
+                            <small class="text-muted">Default: {{ 'Yes' if addr.is_default else 'No' }}</small>
+                            <a href="/user/address/delete/{{ addr.id }}" class="btn btn-sm btn-danger float-end" onclick="return confirm('Delete this address?')">Delete</a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No addresses saved. Add one above.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!-- templates/tracking.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Live Tracking - Pickup #{{ pickup.id }}</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div id="map" style="height: 500px; border-radius: 10px;"></div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5>Status: <span id="status-badge" class="badge bg-info">{{ pickup.status }}</span></h5>
+                <p><strong>Waste Type:</strong> {{ pickup.waste_type }}</p>
+                <p><strong>Scheduled:</strong> {{ pickup.scheduled_date }} at {{ pickup.scheduled_time }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([28.6139, 77.2090], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    var collectorMarker = null;
+    var pickupMarker = null;
+    
+    function updateLocation() {
+        fetch('/api/pickup_location/{{ pickup.id }}')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('status-badge').innerHTML = data.status;
+                document.getElementById('status-badge').className = `badge bg-${data.status === 'completed' ? 'success' : 'info'}`;
+                
+                if (data.address_lat) {
+                    if (!pickupMarker) {
+                        pickupMarker = L.marker([data.address_lat, data.address_lng]).addTo(map)
+                            .bindPopup('Pickup Location: ' + data.address).openPopup();
+                    } else {
+                        pickupMarker.setLatLng([data.address_lat, data.address_lng]);
+                    }
+                    map.setView([data.address_lat, data.address_lng], 13);
+                }
+                
+                if (data.collector_lat && data.collector_lng) {
+                    if (!collectorMarker) {
+                        collectorMarker = L.marker([data.collector_lat, data.collector_lng], {icon: L.divIcon({className: 'bg-primary', html: '🚛', iconSize: [30,30]})}).addTo(map)
+                            .bindPopup('Collector Location');
+                    } else {
+                        collectorMarker.setLatLng([data.collector_lat, data.collector_lng]);
+                    }
+                }
+            });
+    }
+    
+    updateLocation();
+    setInterval(updateLocation, 5000);
+</script>
+{% endblock %}

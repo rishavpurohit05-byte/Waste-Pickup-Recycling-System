@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Collectors List</h2>
+<table class="table">
+    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Total Pickups Completed</th></tr></thead>
+    <tbody>
+    {% for c in collectors %}
+    <tr>
+        <td>{{ c.id }}</td><td>{{ c.name }}</td><td>{{ c.email }}</td><td>{{ c.phone }}</td>
+        <td>{{ c.collector_pickups|selectattr('status','equalto','completed')|list|length }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

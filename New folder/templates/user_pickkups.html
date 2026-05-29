@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Pickup Requests</h2>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr><th>ID</th><th>Date</th><th>Waste Type</th><th>Status</th><th>Points Earned</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for p in pickups %}
+            <tr>
+                <td>#{{ p.id }}</td>
+                <td>{{ p.scheduled_date }} at {{ p.scheduled_time }}</td>
+                <td>{{ p.waste_type }}</td>
+                <td>
+                    <span class="badge bg-{{ 'success' if p.status == 'completed' else 'danger' if p.status == 'cancelled' else 'warning' if p.status == 'pending' else 'primary' }}">
+                        {{ p.status }}
+                    </span>
+                </td>
+                <td>{{ p.points_earned }}</td>
+                <td>
+                    {% if p.status in ['accepted','in_progress'] %}
+                        <a href="/user/tracking/{{ p.id }}" class="btn btn-sm btn-info">Track</a>
+                    {% else %}
+                        <button class="btn btn-sm btn-secondary" disabled>No tracking</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center">No pickups found. <a href="/user/book_pickup">Book one now</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

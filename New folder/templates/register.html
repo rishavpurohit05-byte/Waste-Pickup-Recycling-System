@@ -1,0 +1,395 @@
+<!-- templates/register.html -->
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .register-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        padding: 20px 0;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 600px;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
+    .register-header {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .register-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .register-header i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .register-header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+
+    .form-section {
+        padding: 30px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        border-color: #2ecc71;
+        box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #bdc3c7;
+    }
+
+    .role-selector {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .role-option {
+        position: relative;
+    }
+
+    .role-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .role-option label {
+        display: block;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .role-option input[type="radio"]:checked + label {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+
+    .role-option:hover label {
+        border-color: #667eea;
+    }
+
+    .role-icon {
+        font-size: 1.8rem;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        border: none;
+        padding: 14px 0;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        color: white;
+        width: 100%;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+        color: white;
+    }
+
+    .btn-register:active {
+        transform: translateY(0);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .login-link p {
+        margin: 0;
+        color: #7f8c8d;
+    }
+
+    .login-link a {
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    .password-strength {
+        display: none;
+        margin-top: 8px;
+        height: 4px;
+        border-radius: 2px;
+        background: #e0e0e0;
+        overflow: hidden;
+    }
+
+    .password-strength.show {
+        display: block;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0;
+        transition: all 0.3s ease;
+    }
+
+    .password-strength-bar.weak {
+        width: 33%;
+        background: #e74c3c;
+    }
+
+    .password-strength-bar.medium {
+        width: 66%;
+        background: #f39c12;
+    }
+
+    .password-strength-bar.strong {
+        width: 100%;
+        background: #2ecc71;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .role-selector {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <i class="fas fa-user-plus"></i>
+            <h4>Create Account</h4>
+            <p>Join us in making the world cleaner</p>
+        </div>
+
+        <div class="form-section">
+            <form method="POST" id="registerForm">
+                <!-- Personal Information -->
+                <h6 class="mb-3" style="color: #2c3e50; font-weight: 700;">
+                    <i class="fas fa-user me-2" style="color: #667eea;"></i>Personal Information
+                </h6>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 98765 43210" required>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <h6 class="mb-3 mt-4" style="color: #2c3e50; font-weight: 700;">
+                    <i class="fas fa-envelope me-2" style="color: #667eea;"></i>Contact Information
+                </h6>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <h6 class="mb-3 mt-4" style="color: #2c3e50; font-weight: 700;">
+                    <i class="fas fa-lock me-2" style="color: #667eea;"></i>Security
+                </h6>
+
+                <div class="form-row full">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="At least 8 characters" required onkeyup="checkPasswordStrength()">
+                        <div id="passwordStrength" class="password-strength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <div class="help-text">
+                            ✓ Mix of uppercase, lowercase, numbers & symbols recommended
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Selection -->
+                <h6 class="mb-3 mt-4" style="color: #2c3e50; font-weight: 700;">
+                    <i class="fas fa-briefcase me-2" style="color: #667eea;"></i>Register As
+                </h6>
+
+                <div class="form-group">
+                    <div class="role-selector">
+                        <div class="role-option">
+                            <input type="radio" id="user-role" name="role" value="user" checked>
+                            <label for="user-role">
+                                <span class="role-icon">👤</span>
+                                <strong>Regular User</strong>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Book pickups & earn rewards</div>
+                            </label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" id="collector-role" name="role" value="collector">
+                            <label for="collector-role">
+                                <span class="role-icon">🚛</span>
+                                <strong>Waste Collector</strong>
+                                <div style="font-size: 0.8rem; opacity: 0.8;">Accept & manage pickups</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-register mt-4">
+                    <i class="fas fa-arrow-right me-2"></i>Create My Account
+                </button>
+
+                <!-- Login Link -->
+                <div class="login-link">
+                    <p>Already have an account? <a href="/login">Sign in here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const strengthDiv = document.getElementById('passwordStrength');
+        const bar = strengthDiv.querySelector('.password-strength-bar');
+        
+        if (password.length === 0) {
+            strengthDiv.classList.remove('show');
+            return;
+        }
+
+        strengthDiv.classList.add('show');
+        bar.className = 'password-strength-bar';
+
+        let strength = 0;
+        
+        // Check password length
+        if (password.length >= 8) strength++;
+        if (password.length >= 12) strength++;
+        
+        // Check for uppercase
+        if (/[A-Z]/.test(password)) strength++;
+        
+        // Check for lowercase
+        if (/[a-z]/.test(password)) strength++;
+        
+        // Check for numbers
+        if (/[0-9]/.test(password)) strength++;
+        
+        // Check for special characters
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        if (strength <= 2) {
+            bar.classList.add('weak');
+        } else if (strength <= 4) {
+            bar.classList.add('medium');
+        } else {
+            bar.classList.add('strong');
+        }
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!name || !email || !phone || !password) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+            return;
+        }
+
+        if (password.length < 8) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters long');
+            return;
+        }
+
+        if (!email.includes('@')) {
+            e.preventDefault();
+            alert('Please enter a valid email address');
+            return;
+        }
+    });
+</script>
+{% endblock %}

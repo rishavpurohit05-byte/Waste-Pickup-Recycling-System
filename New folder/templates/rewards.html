@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .rewards-hero {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .points-card {
+        background: linear-gradient(135deg, #FFD89B 0%, #19547B 100%);
+        border: none;
+        color: white;
+    }
+
+    .points-display {
+        font-size: 3.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .redemption-card {
+        border: 2px dashed #2ecc71;
+        background: rgba(46, 204, 113, 0.05);
+    }
+
+    .transaction-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .transaction-badge.earn {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .transaction-badge.redeem {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid #2ecc71;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    table {
+        margin-bottom: 0;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-redeem {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-redeem:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .conversion-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="page-header">
+    <h2><i class="fas fa-gift"></i> Rewards & Points</h2>
+</div>
+
+<!-- Hero Section -->
+<div class="rewards-hero text-center">
+    <h3>🎉 Earn More, Recycle More!</h3>
+    <p class="lead mb-0">Every pickup brings you closer to amazing rewards. Keep contributing to a cleaner planet!</p>
+</div>
+
+<div class="row">
+    <!-- Points Balance Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card points-card h-100 shadow-lg">
+            <div class="card-body text-center">
+                <h6 class="card-title">Your Points Balance</h6>
+                <div class="points-display">{{ user.points }}</div>
+                <p class="card-text"><i class="fas fa-star me-1"></i> Keep recycling to earn more!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Redeem Points Card -->
+    <div class="col-md-8 mb-4">
+        <div class="card redemption-card h-100 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Redeem Your Points</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/user/redeem_points">
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Points to Redeem</strong></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-coins text-warning"></i></span>
+                                <input type="number" name="points" class="form-control" min="10" step="10" placeholder="Enter points (min 10)" required>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>Minimum 10 points. <strong>100 points = ₹50 voucher</strong>
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-redeem w-100">
+                                <i class="fas fa-arrow-right me-2"></i>Redeem Now
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction History -->
+<div class="card shadow-sm">
+    <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h5 class="mb-0 text-white"><i class="fas fa-history me-2"></i>Transaction History</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Action</th>
+                        <th>Points</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr>
+                        <td>
+                            <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                            {{ tx.created_at.strftime('%d %b %Y, %H:%M') }}
+                        </td>
+                        <td>
+                            <span class="transaction-badge {% if tx.points > 0 %}earn{% else %}redeem{% endif %}">
+                                {% if tx.points > 0 %}
+                                    <i class="fas fa-plus-circle me-1"></i>{{ tx.action.capitalize() }}
+                                {% else %}
+                                    <i class="fas fa-minus-circle me-1"></i>{{ tx.action.capitalize() }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <strong class="{% if tx.points > 0 %}text-success{% else %}text-warning{% endif %}">
+                                {{ '+' if tx.points > 0 else '-' }}{{ tx.points|abs }}
+                            </strong>
+                        </td>
+                        <td>{{ tx.description }}</td>
+                        <td>
+                            {% if tx.action == 'earned' %}
+                                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Credited</span>
+                            {% else %}
+                                <span class="badge bg-warning"><i class="fas fa-hourglass me-1"></i>Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No transactions yet. Start booking pickups to earn points!</p>
+            <a href="/user/book_pickup" class="btn btn-primary">Book Your First Pickup</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Rewards Info -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="info-box">
+            <h6><i class="fas fa-lightbulb me-2"></i>How to Earn Points</h6>
+            <ul class="mb-0 small">
+                <li>✓ Complete a pickup: <strong>10 points</strong></li>
+                <li>✓ Bonus per kg of waste: <strong>5 points/kg</strong></li>
+                <li>✓ Refer a friend: <strong>50 points</strong></li>
+                <li>✓ Weekly challenges: <strong>Varies</strong></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="info-box">
+            <h6><i class="fas fa-gift me-2"></i>Redemption Options</h6>
+            <ul class="mb-0 small">
+                <li>✓ <strong>100 points</strong> → ₹50 Voucher</li>
+                <li>✓ <strong>250 points</strong> → ₹150 Voucher</li>
+                <li>✓ <strong>500 points</strong> → ₹350 Voucher</li>
+                <li>✓ <strong>1000 points</strong> → ₹750 Voucher</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="conversion-info text-center mt-4">
+    <h6>🌟 Conversion Rate</h6>
+    <p class="mb-0"><strong>1 Point = ₹0.50</strong> (Standard Conversion)</p>
+    <small>Special deals and bonuses may apply during festive seasons</small>
+</div>
+{% endblock %}
