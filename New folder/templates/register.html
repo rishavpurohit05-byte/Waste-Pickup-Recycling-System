@@ -1,4 +1,4 @@
-<!-- templates/register.html -->
+﻿<!-- templates/register.html -->
 {% extends "base.html" %}
 {% block content %}
 <style>
@@ -281,37 +281,12 @@
                             <div class="password-strength-bar"></div>
                         </div>
                         <div class="help-text">
-                            ✓ Mix of uppercase, lowercase, numbers & symbols recommended
+                            âœ“ Mix of uppercase, lowercase, numbers & symbols recommended
                         </div>
                     </div>
                 </div>
 
-                <!-- Role Selection -->
-                <h6 class="mb-3 mt-4" style="color: #2c3e50; font-weight: 700;">
-                    <i class="fas fa-briefcase me-2" style="color: #667eea;"></i>Register As
-                </h6>
-
-                <div class="form-group">
-                    <div class="role-selector">
-                        <div class="role-option">
-                            <input type="radio" id="user-role" name="role" value="user" checked>
-                            <label for="user-role">
-                                <span class="role-icon">👤</span>
-                                <strong>Regular User</strong>
-                                <div style="font-size: 0.8rem; opacity: 0.8;">Book pickups & earn rewards</div>
-                            </label>
-                        </div>
-                        <div class="role-option">
-                            <input type="radio" id="collector-role" name="role" value="collector">
-                            <label for="collector-role">
-                                <span class="role-icon">🚛</span>
-                                <strong>Waste Collector</strong>
-                                <div style="font-size: 0.8rem; opacity: 0.8;">Accept & manage pickups</div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
+                <input type="hidden" name="role" value="user">
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-register mt-4">
                     <i class="fas fa-arrow-right me-2"></i>Create My Account
@@ -393,3 +368,4 @@
     });
 </script>
 {% endblock %}
+
