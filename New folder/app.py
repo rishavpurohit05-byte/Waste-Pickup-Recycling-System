@@ -247,7 +247,7 @@ def register():
         email = request.form['email']
         password = hashlib.sha256(request.form['password'].encode()).hexdigest()
         phone = request.form['phone']
-        role = request.form.get('role', 'user')
+        role = 'user'
         
         if User.query.filter_by(email=email).first():
             flash('Email already registered', 'danger')
@@ -693,15 +693,51 @@ def mark_notification_read(notif_id):
 # ------------------------- Create Database -------------------------
 with app.app_context():
     db.create_all()
-    # Create admin user if not exists
-    if not User.query.filter_by(role='admin').first():
-        admin = User(name='Admin', email='admin@waste.com', password=hashlib.sha256('admin123'.encode()).hexdigest(), phone='9999999999', role='admin')
-        db.session.add(admin)
+
+    admin_email = os.environ.get('DEFAULT_ADMIN_EMAIL')
+    admin_password = os.environ.get('DEFAULT_ADMIN_PASSWORD')
+    admin_phone = os.environ.get('DEFAULT_ADMIN_PHONE', '9999999999')
+    admin = User.query.filter_by(role='admin').first()
+    if admin_email and admin_password:
+        if admin:
+            admin.email = admin_email
+            admin.password = hashlib.sha256(admin_password.encode()).hexdigest()
+            admin.phone = admin_phone
+        else:
+            admin = User(
+                name='Admin',
+                email=admin_email,
+                password=hashlib.sha256(admin_password.encode()).hexdigest(),
+                phone=admin_phone,
+                role='admin'
+            )
+            db.session.add(admin)
         db.session.commit()
-    # Create sample collector
-    if not User.query.filter_by(role='collector').first():
-        collector = User(name='John Collector', email='collector@waste.com', password=hashlib.sha256('collector123'.encode()).hexdigest(), phone='8888888888', role='collector')
-        db.session.add(collector)
+    elif admin and admin.password == '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9':
+        admin.password = hashlib.sha256(uuid.uuid4().hex.encode()).hexdigest()
+        db.session.commit()
+
+    collector_email = os.environ.get('DEFAULT_COLLECTOR_EMAIL')
+    collector_password = os.environ.get('DEFAULT_COLLECTOR_PASSWORD')
+    collector_phone = os.environ.get('DEFAULT_COLLECTOR_PHONE', '8888888888')
+    collector = User.query.filter_by(role='collector').first()
+    if collector_email and collector_password:
+        if collector:
+            collector.email = collector_email
+            collector.password = hashlib.sha256(collector_password.encode()).hexdigest()
+            collector.phone = collector_phone
+        else:
+            collector = User(
+                name='Collector',
+                email=collector_email,
+                password=hashlib.sha256(collector_password.encode()).hexdigest(),
+                phone=collector_phone,
+                role='collector'
+            )
+            db.session.add(collector)
+        db.session.commit()
+    elif collector and collector.password == 'f792a67c1e3d1bd14b5324c1649611047129dbc71927e2767f4413e87e3791c7':
+        collector.password = hashlib.sha256(uuid.uuid4().hex.encode()).hexdigest()
         db.session.commit()
 
 if __name__ == '__main__':
