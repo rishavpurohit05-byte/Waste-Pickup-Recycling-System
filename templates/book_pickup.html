@@ -1,0 +1,45 @@
+<!-- templates/book_pickup.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Book New Pickup</h2>
+<div class="card">
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="address_id" class="form-label">Select Address</label>
+                <select class="form-control" id="address_id" name="address_id" required>
+                    {% for addr in addresses %}
+                    <option value="{{ addr.id }}">{{ addr.address_line }}, {{ addr.area }}, {{ addr.city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="waste_type" class="form-label">Waste Type</label>
+                <select class="form-control" id="waste_type" name="waste_type">
+                    <option value="plastic">Plastic</option>
+                    <option value="paper">Paper</option>
+                    <option value="glass">Glass</option>
+                    <option value="metal">Metal</option>
+                    <option value="organic">Organic</option>
+                    <option value="ewaste">E-Waste</option>
+                    <option value="other">Other (AI will detect)</option>
+                </select>
+                <small class="text-muted">Upload image for AI waste detection</small>
+            </div>
+            <div class="mb-3">
+                <label for="waste_image" class="form-label">Upload Waste Image (AI will analyze)</label>
+                <input type="file" class="form-control" id="waste_image" name="waste_image" accept="image/*">
+            </div>
+            <div class="mb-3">
+                <label for="scheduled_date" class="form-label">Pickup Date</label>
+                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" required>
+            </div>
+            <div class="mb-3">
+                <label for="scheduled_time" class="form-label">Preferred Time</label>
+                <input type="time" class="form-control" id="scheduled_time" name="scheduled_time" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Pickup Request</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

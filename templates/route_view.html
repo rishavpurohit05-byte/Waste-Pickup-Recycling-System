@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Route – Assigned Pickups</h2>
+<div id="map" style="height: 500px; border-radius: 10px; margin-bottom: 20px;"></div>
+<div class="card">
+    <div class="card-header">Pickup List (Optimized Order)</div>
+    <div class="card-body">
+        <ul class="list-group">
+            {% for p in pickups %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>#{{ p.id }}</strong> – {{ p.address.address_line }}, {{ p.address.area }}<br>
+                    <small>Waste: {{ p.waste_type }} | Status: {{ p.status }}</small>
+                </div>
+                <span class="badge bg-primary rounded-pill">{{ p.scheduled_date }}</span>
+            </li>
+            {% else %}
+            <li class="list-group-item text-muted">No active pickups assigned.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([28.6139, 77.2090], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var pickupsData = {{ pickups_data|tojson }};
+    var waypoints = [];
+
+    pickupsData.forEach(function(p) {
+        if (p.address && p.address.latitude && p.address.longitude) {
+            waypoints.push([p.address.latitude, p.address.longitude]);
+            L.marker([p.address.latitude, p.address.longitude])
+                .addTo(map)
+                .bindPopup('Pickup #' + p.id + ': ' + (p.address.address_line || ''));
+        } else {
+            // fallback – use city centre
+            waypoints.push([28.6139, 77.2090]);
+        }
+    });
+
+    if (waypoints.length > 0) {
+        var routeLine = L.polyline(waypoints, { color: 'blue', weight: 4 }).addTo(map);
+        map.fitBounds(routeLine.getBounds());
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!-- templates/admin_reports.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Waste Management Reports</h2>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Waste by Type</div>
+            <div class="card-body"><canvas id="wasteChart"></canvas></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Area-wise Collection</div>
+            <div class="card-body"><canvas id="areaChart"></canvas></div>
+        </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Monthly Trends</div>
+            <div class="card-body"><canvas id="monthlyChart"></canvas></div>
+        </div>
+    </div>
+</div>
+
+<script>
+new Chart(document.getElementById('wasteChart'), {type: 'pie', data: {labels: {{ waste_types|tojson }}, datasets: [{data: {{ waste_counts|tojson }}}]}});
+new Chart(document.getElementById('areaChart'), {type: 'bar', data: {labels: {{ areas|tojson }}, datasets: [{label: 'Pickups', data: {{ area_counts|tojson }}}]}});
+new Chart(document.getElementById('monthlyChart'), {type: 'line', data: {labels: {{ months|tojson }}, datasets: [{label: 'Pickups', data: {{ monthly_counts|tojson }}}]}});
+</script>
+{% endblock %}

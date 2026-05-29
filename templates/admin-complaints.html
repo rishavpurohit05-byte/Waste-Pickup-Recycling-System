@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>User Complaints</h2>
+<div class="table-responsive">
+    <table class="table">
+        <thead><tr><th>ID</th><th>User</th><th>Subject</th><th>Description</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for comp in complaints %}
+        <tr class="{% if comp.status == 'pending' %}table-danger{% endif %}">
+            <td>{{ comp.id }}</td><td>{{ comp.user.name }}</td><td>{{ comp.subject }}</td>
+            <td>{{ comp.description[:80] }}{% if comp.description|length > 80 %}...{% endif %}</td>
+            <td>{{ comp.status }}</td>
+            <td>{{ comp.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+                {% if comp.status == 'pending' %}
+                <a href="/admin/complaint/resolve/{{ comp.id }}" class="btn btn-sm btn-success">Resolve</a>
+                {% else %}
+                <span class="badge bg-success">Resolved</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

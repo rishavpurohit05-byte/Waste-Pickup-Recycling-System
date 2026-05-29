@@ -1,0 +1,72 @@
+<!-- templates/collector_panel.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Collector Dashboard</h2>
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h4>Pending Pickups ({{ pending_pickups|length }})</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead><tr><th>ID</th><th>Address</th><th>Waste Type</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody>
+                    {% for pickup in pending_pickups %}
+                    <tr>
+                        <td>#{{ pickup.id }}</td>
+                        <td>{{ pickup.address.address_line }}</td>
+                        <td>{{ pickup.waste_type }}</td>
+                        <td>{{ pickup.scheduled_date }}</td>
+                        <td><a href="/collector/accept/{{ pickup.id }}" class="btn btn-sm btn-success">Accept</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <h4 class="mt-4">Accepted Pickups ({{ accepted_pickups|length }})</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead><tr><th>ID</th><th>User</th><th>Address</th><th>Status</th><th>Update</th></tr></thead>
+                <tbody>
+                    {% for pickup in accepted_pickups %}
+                    <tr>
+                        <td>#{{ pickup.id }}</td>
+                        <td>{{ pickup.user.name }}</td>
+                        <td>{{ pickup.address.address_line }}</td>
+                        <td>{{ pickup.status }}</td>
+                        <td>
+                            <form method="POST" action="/collector/update_status/{{ pickup.id }}" class="d-inline">
+                                <select name="status" class="form-select form-select-sm d-inline w-auto" onchange="this.form.submit()">
+                                    <option value="accepted">Accepted</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </form>
+                            <button class="btn btn-sm btn-info" onclick="updateLocation({{ pickup.id }})">Update Location</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateLocation(pickupId) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            fetch(`/collector/update_location/${pickupId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                })
+            }).then(() => alert('Location updated'));
+        });
+    } else {
+        alert('Geolocation not supported');
+    }
+}
+</script>
+{% endblock %}

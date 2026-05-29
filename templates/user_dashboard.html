@@ -1,0 +1,384 @@
+<!-- templates/user_dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .welcome-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .welcome-hero h2 {
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .welcome-hero p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .stat-card .card-body {
+        padding: 25px;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin: 10px 0;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .stat-card.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .stat-card.success {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+    }
+
+    .stat-card.warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+
+    .stat-card .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.3;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 20px;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .table-responsive {
+        border-radius: 0 0 8px 8px;
+    }
+
+    table {
+        margin-bottom: 0;
+    }
+
+    thead {
+        background: #f8f9fa;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    thead th {
+        font-weight: 700;
+        color: #2c3e50;
+        padding: 15px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-in-progress {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .quick-actions .btn {
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .quick-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        color: white;
+    }
+
+    .btn-warning-custom {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-warning-custom:hover {
+        color: white;
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger-custom:hover {
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #7f8c8d;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #bdc3c7;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="welcome-hero">
+    <h2>👋 Welcome back, {{ user.name }}!</h2>
+    <p>You're doing great! Keep recycling and earning rewards.</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card primary">
+            <div class="card-body">
+                <div class="stat-icon float-end"><i class="fas fa-coins"></i></div>
+                <div class="stat-label">Points Balance</div>
+                <div class="stat-number">{{ user.points }}</div>
+                <small><i class="fas fa-arrow-up"></i> Keep earning</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card success">
+            <div class="card-body">
+                <div class="stat-icon float-end"><i class="fas fa-truck"></i></div>
+                <div class="stat-label">Total Pickups</div>
+                <div class="stat-number">{{ user.pickups|length }}</div>
+                <a href="/user/pickups" class="text-white small" style="text-decoration: none;">View all →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card warning">
+            <div class="card-body">
+                <div class="stat-icon float-end"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="stat-label">Saved Addresses</div>
+                <div class="stat-number">{{ addresses|length }}</div>
+                <a href="/user/addresses" class="text-white small" style="text-decoration: none;">Manage →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row">
+    <!-- Recent Pickups -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2"></i>Recent Pickups</h5>
+            </div>
+            {% if recent_pickups %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Pickup ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pickup in recent_pickups %}
+                        <tr>
+                            <td><strong>#{{ pickup.id }}</strong></td>
+                            <td>
+                                <i class="fas fa-calendar me-2"></i>
+                                {{ pickup.scheduled_date.strftime('%d %b %Y') }}
+                            </td>
+                            <td>
+                                <i class="fas fa-tag me-2"></i>{{ pickup.waste_type }}
+                            </td>
+                            <td>
+                                {% if pickup.status == 'completed' %}
+                                    <span class="status-badge status-completed"><i class="fas fa-check-circle me-1"></i>Completed</span>
+                                {% elif pickup.status == 'pending' %}
+                                    <span class="status-badge status-pending"><i class="fas fa-clock me-1"></i>Pending</span>
+                                {% elif pickup.status == 'in_progress' %}
+                                    <span class="status-badge status-in-progress"><i class="fas fa-spinner fa-spin me-1"></i>In Progress</span>
+                                {% else %}
+                                    <span class="status-badge" style="background: #f0f0f0; color: #666;">{{ pickup.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pickup.status in ['accepted','in_progress'] %}
+                                    <a href="/user/tracking/{{ pickup.id }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-map me-1"></i>Track
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>No tracking</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p><strong>No pickups yet</strong></p>
+                <p>Start your recycling journey by booking your first pickup!</p>
+                <a href="/user/book_pickup" class="btn btn-primary btn-sm mt-3">
+                    <i class="fas fa-plus me-1"></i>Book Pickup
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions">
+                    <a href="/user/book_pickup" class="btn btn-primary-custom">
+                        <i class="fas fa-plus me-2"></i>Book Pickup
+                    </a>
+                    <a href="/user/rewards" class="btn btn-warning-custom">
+                        <i class="fas fa-gift me-2"></i>Rewards
+                    </a>
+                    <a href="/user/addresses" class="btn btn-primary-custom">
+                        <i class="fas fa-map me-2"></i>Addresses
+                    </a>
+                    <button class="btn btn-danger-custom" data-bs-toggle="modal" data-bs-target="#complaintModal">
+                        <i class="fas fa-comment me-2"></i>Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="card shadow-sm mt-3" style="border-left: 4px solid #2ecc71; border-radius: 8px;">
+            <div class="card-body">
+                <h6 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Recycling Tips</h6>
+                <ul class="small mb-0" style="padding-left: 20px;">
+                    <li>📦 Clean containers before pickup</li>
+                    <li>♻️ Separate waste by type</li>
+                    <li>⭐ Earn bonus points for large orders</li>
+                    <li>🎁 Redeem points for vouchers</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Modal -->
+<div class="modal fade" id="complaintModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none;">
+                <h5 class="modal-title"><i class="fas fa-flag me-2"></i>Report an Issue</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/user/complaint">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Subject</strong></label>
+                        <input type="text" name="subject" class="form-control" placeholder="Brief description" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Description</strong></label>
+                        <textarea name="description" class="form-control" rows="4" placeholder="Provide details..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid #f0f0f0;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; border: none;">
+                        <i class="fas fa-paper-plane me-1"></i>Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

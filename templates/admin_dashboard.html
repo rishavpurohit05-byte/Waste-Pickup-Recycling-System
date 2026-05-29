@@ -1,0 +1,44 @@
+<!-- templates/admin_dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<div class="row mt-4">
+    <div class="col-md-3"><div class="card bg-primary text-white"><div class="card-body"><h5>Users</h5><h3>{{ total_users }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card bg-success text-white"><div class="card-body"><h5>Collectors</h5><h3>{{ total_collectors }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card bg-warning text-white"><div class="card-body"><h5>Pickups</h5><h3>{{ total_pickups }}</h3></div></div></div>
+    <div class="col-md-3"><div class="card bg-info text-white"><div class="card-body"><h5>Points Awarded</h5><h3>{{ total_points_awarded }}</h3></div></div></div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Monthly Pickup Trends</div>
+            <div class="card-body">
+                <canvas id="trendChart" height="100"></canvas>
+                <div id="chart-data" style="display:none"
+                     data-labels='{{ monthly_labels|default([])|tojson|safe }}'
+                     data-values='{{ monthly_data|default([])|tojson|safe }}'></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const chartDataEl = document.getElementById('chart-data');
+const monthlyLabels = JSON.parse(chartDataEl.dataset.labels || '[]');
+const monthlyData = JSON.parse(chartDataEl.dataset.values || '[]');
+const ctx = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: monthlyLabels,
+        datasets: [{
+            label: 'Pickups',
+            data: monthlyData,
+            borderColor: 'blue',
+            tension: 0.1
+        }]
+    }
+});
+</script>
+{% endblock %}
